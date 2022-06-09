@@ -1,0 +1,29 @@
+kind: Project
+name: ci-demo-project
+environments:
+  - name: local
+    providers:
+      - name: local-kubernetes
+  - name: preview
+    providers:
+      - name: kubernetes
+        # Replace these values as appropriate
+        context: my-preview-cluster
+        defaultHostname: ci-demo-project-${local.env.CIRCLE_BRANCH || "default"}.preview.my-domain
+        namespace: ci-demo-project-${local.env.CIRCLE_BRANCH || "default"}
+        buildMode: cluster-docker
+
+  - name: staging
+    providers:
+      - name: kubernetes
+        # Replace these values as appropriate
+        context: my-staging-cluster
+        namespace: ci-demo-project
+        defaultHostname: ci-demo-project.staging.my-domain
+        forceSsl: true
+        tlsCertificates:
+        - name: staging-tls
+          secretRef:
+            name: staging-tls
+            namespace: default
+        buildMode: cluster-docker
